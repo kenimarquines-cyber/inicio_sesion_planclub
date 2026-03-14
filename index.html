@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanClub Login</title>
+    <style>
+        /* 1. ESTILOS BASE Y RESPONSIVOS */
+        body {
+            background-color: #0b111e;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 2. LOGO Y TÍTULO */
+        .logo-placeholder {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            filter: drop-shadow(0px 0px 8px #ffffff); /* Efecto neón */
+        }
+        h1 {
+            color: #00ffe5;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
+        /* 3. BOTONES Y FORMULARIOS */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 30px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-iniciar { background: linear-gradient(to right, #4df0e0, #5c18fa); color: #ffffff; }
+        .btn-registrar { background: linear-gradient(to right, #4a90e2, #357abd); color: white; }
+
+        .form-container {
+            display: none; /* Se oculta hasta que se presiona un botón */
+            background: #162136;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #0faf9f;
+            background: #0b111e;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .mensaje {
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        /* 4. AJUSTES PARA PC (Pantallas grandes) */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 450px;
+                background: rgba(255, 255, 255, 0.02);
+                border-radius: 25px;
+                padding: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="menu-principal">
+        <img src="logoplan.png" alt="s" class="logo-placeholder">
+        <h1>PLANCLUB</h1>
+        <button class="btn btn-iniciar" onclick="mostrarForm('login')">INICIAR SESIÓN</button>
+        <button class="btn btn-registrar" onclick="mostrarForm('registro')">REGISTRARSE</button>
+    </div>
+
+    <div class="container" id="form-login" style="display: none;">
+        <div class="form-container" style="display: block;">
+            <h3>Iniciar Sesión</h3>
+            <input type="text" id="login-user" placeholder="Usuario">
+            <input type="password" id="login-pass" placeholder="Contraseña">
+            <button class="btn btn-iniciar" onclick="validarLogin()">ENTRAR</button>
+            <button class="btn" style="background:none; color: gray;" onclick="volver()">Cancelar</button>
+            <div id="error-login" class="mensaje" style="color: #ff4d4d;"></div>
+        </div>
+    </div>
+
+    <div class="container" id="form-registro" style="display: none;">
+        <div class="form-container" style="display: block;">
+            <h3>Registro</h3>
+            <input type="text" id="reg-user" placeholder="Nuevo Usuario">
+            <input type="password" id="reg-pass" placeholder="Nueva Contraseña">
+            <button class="btn btn-registrar" onclick="validarRegistro()">REGISTRAR</button>
+            <button class="btn" style="background:none; color: gray;" onclick="volver()">Cancelar</button>
+            <div id="error-reg" class="mensaje"></div>
+        </div>
+    </div>
+
+    <script>
+        // Cargar usuarios de la memoria del navegador o crear el admin por defecto
+        let usuarios = JSON.parse(localStorage.getItem('usuarios')) || { "admin": "1234" };
+
+        // Función para cambiar entre pantallas
+        function mostrarForm(tipo) {
+            document.getElementById('menu-principal').style.display = 'none';
+            if(tipo === 'login') {
+                document.getElementById('form-login').style.display = 'block';
+            } else {
+                document.getElementById('form-registro').style.display = 'block';
+            }
+        }
+
+        // Función para regresar al menú principal
+        function volver() {
+            document.getElementById('form-login').style.display = 'none';
+            document.getElementById('form-registro').style.display = 'none';
+            document.getElementById('menu-principal').style.display = 'block';
+            // Limpiar inputs y mensajes
+            document.getElementById('error-login').innerText = '';
+            document.getElementById('error-reg').innerText = '';
+        }
+
+        // Lógica de inicio de sesión
+        function validarLogin() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+
+            if (usuarios[user] && usuarios[user] === pass) {
+                alert("¡Bienvenido a PlanClub!");
+            } else {
+                document.getElementById('error-login').innerText = "Usuario/contraseña incorrectos";
+            }
+        }
+
+        // Lógica de registro
+        function validarRegistro() {
+            const user = document.getElementById('reg-user').value;
+            const pass = document.getElementById('reg-pass').value;
+
+            if (user === "" || pass === "") {
+                alert("Por favor rellena los campos");
+                return;
+            }
+
+            if (usuarios[user]) {
+                document.getElementById('error-reg').style.color = "#ff4d4d";
+                document.getElementById('error-reg').innerText = "Este usuario ya está registrado";
+            } else {
+                usuarios[user] = pass;
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+                
+                document.getElementById('error-reg').style.color = "#4df0e0";
+                document.getElementById('error-reg').innerText = "Registro exitoso. Redirigiendo...";
+                
+                setTimeout(() => {
+                    volver();
+                    // Limpiar campos de registro tras éxito
+                    document.getElementById('reg-user').value = "";
+                    document.getElementById('reg-pass').value = "";
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
